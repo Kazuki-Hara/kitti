@@ -11,3 +11,5 @@ WORKDIR /home/workspace
 COPY requirements.txt ${pwd}
 
 RUN pip install -r requirements.txt
+
+RUN pip install -r mayavi PyQt5

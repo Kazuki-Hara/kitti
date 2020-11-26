@@ -45,6 +45,7 @@ class Calibration:
 
         self.P_ref_to_velo = self.inverse_transpose(self.P_velo_to_ref)  # 3x4
 
+
     def read_calib_file(self, calib_filepath):
         calib = {}
         with open(calib_filepath) as f:
@@ -91,7 +92,7 @@ class Calibration:
         Returns:
           nx3 points in reference camera coord.
         '''
-        pts_3d = self.cart_to_homo(pts_3d)
+        #pts_3d = self.cart_to_homo(pts_3d)
         return np.dot(pts_3d, self.P_velo_to_ref.T)
 
     def project_ref_to_velo(self, pts_3d):

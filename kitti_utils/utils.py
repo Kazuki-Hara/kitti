@@ -44,7 +44,7 @@ def draw_point_cloud(pc, boxes=None, colors=None):
     fig = mlab.figure(figure=None, bgcolor=(0, 0, 0),
                       fgcolor=None, engine=None, size=(1600, 1000))
     color = pc[:, 2]
-    mlab.points3d(pc[:, 0], pc[:, 1], pc[:, 2], color, color=None,
+    mlab.points3d(pc[:, 0], pc[:, 1], pc[:, 2], color, color=(1,1,1),
                   mode='point', colormap='gnuplot', scale_factor=0.3, figure=fig)
 
     # draw origin
