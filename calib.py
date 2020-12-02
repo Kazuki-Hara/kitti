@@ -5,6 +5,12 @@ from PIL import Image
 from mayavi import mlab
 import math
 
+
+object_class_list = [
+    'Car', 'Cyclist', 'Pedestrian'
+]
+
+
 def draw_point_cloud(points, label_data, colors=None):
     '''Draw draw point cloud.
 
@@ -108,13 +114,73 @@ def check_point_in_3dbox(point, vertex_list):
     else:
         return False
     
+
+
+def save_image_in_bbox(file_name):
+    label_data = get_label_info(file_name)
+    image_path = 'image2/' + file_name + '.png'
+    image = np.array(Image.open(image_path))
+    for i, label in enumerate(label_data):
+        minx = int(float(label[4]))
+        miny = int(float(label[5]))
+        maxx = int(float(label[6]))
+        maxy = int(float(label[7]))
+
+        occlusion = int(label[2])
+        difficulty = caluc_difficluty(maxy, miny, occlusion)
+
+        image = draw_rectangle(image, minx, miny, maxx, maxy, difficulty)
         
-        
+    
+    Image.fromarray(image).save('image_in_bbox/test_' + file_name + '.png')
+
+
+def draw_rectangle(image, minx, miny, maxx, maxy, difficulty):
+    if difficulty == 'easy':
+        color = (0,0,255)
+    elif difficulty == 'normal':
+        color = (255,255,0)
+    elif difficulty == 'hard':
+        color = (255,0,0)
+    else:
+        return image
+    image[miny:maxy, minx] = color
+    image[miny:maxy, maxx] = color
+    image[miny, minx:maxx] = color
+    image[maxy, minx:maxx] = color
+    return image
+
+
+def caluc_difficluty(maxy, miny, occlusion):
+    height = maxy - miny
+    if height > 40 and occlusion == 0:
+        difficulty = 'easy'
+    elif height > 25 and occlusion <= 1:
+        difficulty = 'normal'
+    elif height > 25 and occlusion <= 2:
+        difficulty = 'hard'
+    else:
+        difficulty = 'none'
+    return difficulty
+
+
+def get_label_info(file_name):
+    label_file_path = 'label/' + file_name + '.txt'
+    
+    with open(label_file_path, 'r') as f:
+        lines = f.readlines()
+    label_data = [line.strip().split(' ') for line in lines]
+    label_data = [data for data in label_data if data[0] in object_class_list]
+    if len(label_data) == 0:
+        return False
+    else:
+        return label_data
 
 
         
 
 if __name__ == "__main__":
+    '''
     with open('label/002155.txt', 'r') as f:
         lines = f.readlines()
     label_data = [line.strip().split(' ') for line in lines if line[0] != 'DontCare']
@@ -122,7 +188,8 @@ if __name__ == "__main__":
     #print(label_data)
     points = np.fromfile('velodyne/002155.bin', dtype=np.float32, count = -1).reshape([-1, 4])
     draw_point_cloud(points, label_data)
-
+    '''
+    save_image_in_bbox('005541')
 
 
     '''
